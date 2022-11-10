@@ -1,3 +1,4 @@
+// Toggle Component
 import React from "react";
 interface ToggleProps {
   checked: boolean;
