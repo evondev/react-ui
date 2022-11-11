@@ -79,7 +79,7 @@ const DropdownContent = ({
 }) => {
   if (typeof document === "undefined") return null;
   const top = coords.y;
-  const left = coords.x + coords.width / 2;
+  const left = coords.x + (position === "center" ? coords.width / 2 : 0);
   const transform = `${position === "center" ? "translateX(-50%)" : ""}`;
   return createPortal(
     <div
