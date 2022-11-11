@@ -1,3 +1,4 @@
+// Dropdown component
 import React, {
   ReactEventHandler,
   RefObject,
@@ -10,7 +11,7 @@ type Position = "left" | "right" | "center";
 interface DropdownProps {
   children?: React.ReactNode;
   header: React.ReactNode;
-  show?: boolean;
+  show: boolean;
   handleShowDropdown?: (value?: boolean) => void;
   className?: string;
   position: Position;
@@ -35,7 +36,6 @@ const Dropdown = ({
   });
   const handleClickHeader = (e: any) => {
     const position = e.target.getBoundingClientRect() as DOMRect;
-    console.log("handleClickHeader ~ position", position);
     setCoords({
       x: position?.left,
       y: position?.top + position?.height + window?.scrollY,
@@ -78,14 +78,16 @@ const DropdownContent = ({
   position: Position;
 }) => {
   if (typeof document === "undefined") return null;
+  const top = coords.y;
+  const left = coords.x + coords.width / 2;
+  const transform = `${position === "center" ? "translateX(-50%)" : ""}`;
   return createPortal(
     <div
       className="absolute z-10"
       style={{
         top: coords.y,
-        [position === "center" ? "left" : position]:
-          coords.x + coords.width / 2,
-        transform: `${position === "center" ? "translateX(-50%)" : ""}`,
+        [position === "center" ? "left" : position]: left,
+        transform,
       }}
     >
       {children}
