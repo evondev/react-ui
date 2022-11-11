@@ -6,16 +6,19 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+type Position = "left" | "right" | "center";
 interface DropdownProps {
   children?: React.ReactNode;
   header: React.ReactNode;
   show?: boolean;
   handleShowDropdown?: (value?: boolean) => void;
   className?: string;
+  position: Position;
 }
 type Coords = {
   x: number;
   y: number;
+  width: number;
 };
 const Dropdown = ({
   children,
@@ -23,10 +26,12 @@ const Dropdown = ({
   show = false,
   handleShowDropdown = () => {},
   className = "",
+  position = "left",
 }: DropdownProps) => {
   const [coords, setCoords] = useState<Coords>({
     x: 0,
     y: 0,
+    width: 0,
   });
   const handleClickHeader = (e: any) => {
     const position = e.target.getBoundingClientRect() as DOMRect;
@@ -34,6 +39,7 @@ const Dropdown = ({
     setCoords({
       x: position?.left,
       y: position?.top + position?.height + window?.scrollY,
+      width: position?.width,
     });
     handleShowDropdown?.();
   };
@@ -51,17 +57,25 @@ const Dropdown = ({
   }, []);
   return (
     <div className={className} ref={nodeRef}>
-      <div onClick={handleClickHeader}>{header}</div>
-      {show && <DropdownContent coords={coords}>{children}</DropdownContent>}
+      <div className="w-fit" onClick={handleClickHeader}>
+        {header}
+      </div>
+      {show && (
+        <DropdownContent position={position} coords={coords}>
+          {children}
+        </DropdownContent>
+      )}
     </div>
   );
 };
 const DropdownContent = ({
   children,
   coords,
+  position = "left",
 }: {
   children: React.ReactNode;
   coords: Coords;
+  position: Position;
 }) => {
   if (typeof document === "undefined") return null;
   return createPortal(
@@ -69,7 +83,9 @@ const DropdownContent = ({
       className="absolute z-10"
       style={{
         top: coords.y,
-        left: coords.x,
+        [position === "center" ? "left" : position]:
+          coords.x + coords.width / 2,
+        transform: `${position === "center" ? "translateX(-50%)" : ""}`,
       }}
     >
       {children}

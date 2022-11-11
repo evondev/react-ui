@@ -9,21 +9,18 @@ function App() {
   return (
     <div className="flex justify-center h-screen items-center">
       <Dropdown
-        className="w-full max-w-[350px]"
+        position="right"
         show={showAccount}
         handleShowDropdown={(value?: boolean) => toggleShowAccount(value)}
         header={
           <>
-            <div className="w-full flex items-center justify-between gap-5 py-3 px-5 rounded-lg border border-gray-200 cursor-pointer">
-              <span>Profile Settings</span>
-            </div>
-            {/* <div className="w-10 h-10 cursor-pointer">
+            <div className="w-10 h-10 cursor-pointer">
               <img
                 src="https://source.unsplash.com/random"
                 className="w-full h-full object-cover rounded-full"
                 alt=""
               />
-            </div> */}
+            </div>
           </>
         }
       >
