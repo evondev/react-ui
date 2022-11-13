@@ -1,40 +1,26 @@
-import { EventHandler, useEffect, useRef, useState } from "react";
+import {
+  EventHandler,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
+import Popover from "./components/Popover";
+import useGetElementCoords from "./hooks/useGetElementCoords";
+import { Coords, Position } from "./types/global";
 // React Portal
 // getBoundingClientRect
-type Position = "left" | "right";
-type Coords = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+
 function App() {
-  const [isShowDropdown, setIsShowDropdown] = useState<boolean>(false);
-  const [coords, setCoords] = useState<Coords>({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
-  const handleClickAvatar = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    const node = e.target as HTMLElement;
-    const clientRect = node.getBoundingClientRect() as DOMRect;
-    setCoords({
-      x: clientRect.left,
-      y: clientRect.top + window?.scrollY,
-      width: clientRect.width,
-      height: clientRect.height,
-    });
-    setIsShowDropdown((s) => !s);
-  };
+  const [isShowSettings, setIsShowSettings] = useState<boolean>(false);
+
   const nodeRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutPopover(this: Document, ev: MouseEvent) {
       if (nodeRef.current && !nodeRef.current.contains(ev.target as Node)) {
-        setIsShowDropdown(false);
+        setIsShowSettings(false);
       }
     }
     document.addEventListener("click", handleClickOutPopover);
@@ -42,40 +28,41 @@ function App() {
       document.removeEventListener("click", handleClickOutPopover);
     };
   }, []);
+  const { coords, elmRef, handleGetElementCoords } = useGetElementCoords();
+  const handleToggleSettings = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    setIsShowSettings((s) => !s);
+    handleGetElementCoords(e);
+  };
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="relative" ref={nodeRef}>
-        <div className="w-10 h-10 cursor-pointer" onClick={handleClickAvatar}>
-          <img
-            src="https://source.unsplash.com/random"
-            alt=""
-            className="rounded-full w-full h-full object-cover"
-          />
+        <div
+          className="cursor-pointer"
+          onClick={handleToggleSettings}
+          ref={elmRef}
+        >
+          Show settings
         </div>
-        {isShowDropdown && (
-          <DropdownContent position="right" coords={coords}></DropdownContent>
+        {isShowSettings && (
+          <Popover
+            coords={coords}
+            position="right"
+            className="bg-white rounded-2xl shadow w-[230px] py-6 px-5"
+          >
+            <SettingsContentMemo></SettingsContentMemo>
+          </Popover>
         )}
       </div>
     </div>
   );
 }
 
-function DropdownContent({
-  coords,
-  position = "left",
-}: {
-  coords: Coords;
-  position: Position;
-}) {
-  if (typeof document === "undefined") return null;
-  return createPortal(
-    <div
-      style={{
-        [position]: coords.x,
-        top: coords.y + coords.height * 1.5,
-      }}
-      className="absolute top-full bg-white rounded-2xl shadow z-10 w-[230px] py-6 px-5"
-    >
+const SettingsContentMemo = memo(SettingsContent);
+function SettingsContent() {
+  return (
+    <>
       <div className="flex flex-col gap-5 pb-7 mb-7 border-b border-b-gray-200">
         <a
           href="#"
@@ -105,8 +92,7 @@ function DropdownContent({
         </svg>
         <span>Sign out</span>
       </button>
-    </div>,
-    document.getElementById("root") as HTMLElement
+    </>
   );
 }
 
