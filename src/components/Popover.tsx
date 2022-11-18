@@ -17,10 +17,12 @@ function Popover({
   return createPortal(
     <div
       style={{
-        [position]: coords.x,
+        left: position === "right" ? coords.x + coords.width : coords.x,
         top: coords.y + coords.height * 1.5,
       }}
-      className={`absolute top-full ${className}`}
+      className={`absolute top-full ${
+        position === "right" ? "-translate-x-full" : ""
+      } ${className}`}
     >
       {children}
     </div>,
