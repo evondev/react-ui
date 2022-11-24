@@ -7,7 +7,7 @@ interface TabItemProps {
 interface TabProps {
   tabList: TabItemProps[];
   className?: string;
-  onClick?: (tab: TabItemsKeys) => void;
+  onClick: (tab: TabItemsKeys) => void;
   activeTab: string;
   children?: React.ReactNode;
 }

@@ -20,7 +20,7 @@ const tabList = [
 ] as const;
 export type TabItemsKeys = typeof tabList[number]["name"];
 function App() {
-  const [activeTab, setActiveTab] = useState<TabItemsKeys>(tabList[0].name);
+  const [activeTab, setActiveTab] = useState<TabItemsKeys>("display-settings");
   return (
     <div className="flex items-center justify-center h-screen">
       <Tab
